@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:16
+    pull_policy: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      TZ: US/Eastern
+      PGTZ: UTC
+      POSTGRES_DATABASE: litestar
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  litestar:
+    image: ${DOCKER_REGISTRY}/test-litestar:latest
+    platform: linux/amd64
+    build:
+      context: ${PKG_PATH}
+      dockerfile: ${PKG_PATH}/.docker/Dockerfile
+      x-bake:
+        tags:
+          - ${DOCKER_REGISTRY}/test-litestar:${GIT_REF}
+          - ${DOCKER_REGISTRY}/test-litestar:latest
+        platforms:
+          - linux/amd64
+        pull: true
+        cache_from:
+          - type=local,src=${PKG_PATH}/.cache
+        cache_to:
+          - type=local,dst=${PKG_PATH}/.cache,force-compression=true
+      args:
+        GIT_REF: ${GIT_REF}
+        APP_DIR: ${APP_DIR}
+    #volumes:
+    #  - ${PKG_PATH}:${APP_DIR}
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    env_file:
+      - ${PKG_PATH}/.env
+       
+volumes:
+  postgres-data:
+    driver: local
