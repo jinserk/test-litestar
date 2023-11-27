@@ -1,14 +1,21 @@
-from litestar import Litestar, get
+from dataclasses import dataclass
+
+from litestar import Litestar, post
 
 
-@get("/")
-async def index() -> str:
-    return "Hello, world!"
+@dataclass
+class TodoItem:
+    title: str
+    done: bool
 
 
-@get("/books/{book_id:int}")
-async def get_book(book_id: int) -> dict[str, int]:
-    return {"book_id": book_id}
+TODO_LIST: list[TodoItem] = []
 
 
-app = Litestar([index, get_book])
+@post("/")
+async def add_item(data: TodoItem) -> list[TodoItem]:
+    TODO_LIST.append(data)
+    return TODO_LIST
+
+
+app = Litestar([add_item])

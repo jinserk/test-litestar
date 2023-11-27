@@ -33,8 +33,8 @@ services:
       args:
         GIT_REF: ${GIT_REF}
         APP_DIR: ${APP_DIR}
-    #volumes:
-    #  - ${PKG_PATH}:${APP_DIR}
+    volumes:
+      - ${PKG_PATH}/src:${APP_DIR}/src
     ports:
       - 8000:8000
     depends_on:

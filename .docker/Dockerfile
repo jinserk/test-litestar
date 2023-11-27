@@ -38,4 +38,4 @@ EXPOSE 8000
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--", "poetry", "run"]
-CMD ["litestar", "run", "--host", "0.0.0.0"]
+CMD ["litestar", "run", "--host", "0.0.0.0", "--reload"]
